@@ -6,6 +6,7 @@ import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.bookstore.dto.BookListResponse;
+import com.example.bookstore.dto.BookResponse;
 import com.example.bookstore.dto.CategoryType;
 import com.example.bookstore.dto.SaveBookRequest;
 import com.example.bookstore.dto.SaveBookResponse;
@@ -27,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/v1/books")
 @RequiredArgsConstructor
+@CrossOrigin
 public class BookController {
 	
 	private final BookListService bookListService;
@@ -58,5 +61,11 @@ public class BookController {
 	public ResponseEntity<List<BookListResponse>> searchByTitle(@PathVariable String title) {
 		return ResponseEntity.ok(this.bookListService.searchByTitle(title));
 	}
+	
+	@GetMapping("/{id}")
+	public ResponseEntity<BookResponse> findById(@PathVariable Long id) throws Exception {
+		return ResponseEntity.ok(this.bookListService.findById(id));
+	}
+	
 	
 }

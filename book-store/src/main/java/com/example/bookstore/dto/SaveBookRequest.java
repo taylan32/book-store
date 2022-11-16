@@ -3,9 +3,9 @@ package com.example.bookstore.dto;
 import java.io.File;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import com.example.bookstore.model.BookStatus;
-
 import lombok.Data;
 
 @Data

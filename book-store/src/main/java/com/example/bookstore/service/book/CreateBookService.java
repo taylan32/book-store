@@ -30,6 +30,7 @@ public class CreateBookService {
 			.title(request.getTitle())
 			.lastPageNumber(request.getLastPageNumber())
 			.totalPage(request.getTotalPage())
+			.publisher(request.getPublisher())
 			.build();
 		Book addedBook = bookRepository.save(book);
 		
@@ -38,6 +39,7 @@ public class CreateBookService {
 				.authorName(addedBook.getAuthorName())
 				.categoryName(addedBook.getCategory().getName())
 				.bookStatus(addedBook.getBookStatus())
+				.title(addedBook.getTitle())
 				.publisher(addedBook.getPublisher())
 				.totalPage(addedBook.getTotalPage())
 				.lastPageNumber(addedBook.getLastPageNumber())
