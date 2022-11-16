@@ -3,8 +3,11 @@ package com.example.bookstore.exception;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.security.auth.message.AuthException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -36,12 +39,26 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<ValidationError> handleValidationException(MethodArgumentNotValidException exception) {
 		Map<String, String> validationExceptions = new HashMap<>();
 		exception.getBindingResult().getFieldErrors().forEach(item -> {
-			validationExceptions.put(((FieldError)item).getField(), item.getDefaultMessage());
+			validationExceptions.put(((FieldError) item).getField(), item.getDefaultMessage());
 		});
 		return new ResponseEntity<ValidationError>(new ValidationError(HttpStatus.BAD_REQUEST,
 				"example.com/probs/validation", "Validation Exception(s)", "Validation Error.", validationExceptions),
 				HttpStatus.BAD_REQUEST);
 
+	}
+
+	@ExceptionHandler(AccessDeniedException.class)
+	public ResponseEntity<AuthError> handleAuthException(AccessDeniedException exception) {
+		return new ResponseEntity<AuthError>(
+				new AuthError(HttpStatus.FORBIDDEN, "example.com/auth", "Authorization Error", exception.getMessage()),
+				HttpStatus.FORBIDDEN);
+	}
+
+	// TODO: fix authException handler
+	@ExceptionHandler(AuthException.class)
+	public ResponseEntity<AuthError> handleAuthException(AuthException exception) {
+		return new ResponseEntity<AuthError>(new AuthError(HttpStatus.UNAUTHORIZED, "example.com/auth",
+				"Authorization Error", exception.getMessage()), HttpStatus.UNAUTHORIZED);
 	}
 
 }
