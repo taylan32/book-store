@@ -1,64 +1,87 @@
 package com.example.bookstore.exception;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import javax.security.auth.message.AuthException;
-
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.validation.FieldError;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-@ControllerAdvice
-public class GlobalExceptionHandler {
+@RestControllerAdvice
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-	@ExceptionHandler(Exception.class)
-	public ResponseEntity<BaseError> handleException(Exception exception) {
-		return new ResponseEntity<BaseError>(new BaseError(HttpStatus.INTERNAL_SERVER_ERROR,
-				"example.com/probs/internal", "Internal Server Error", exception.getMessage()),
-				HttpStatus.INTERNAL_SERVER_ERROR);
-	}
+	// handleHttpMediaTypeNotSupported : triggers when the JSON is invalid
+	@Override
+	protected ResponseEntity<Object> handleHttpMediaTypeNotSupported(HttpMediaTypeNotSupportedException ex,
+			HttpHeaders headers, HttpStatus status, WebRequest request) {
 
-	@ExceptionHandler(NotFoundException.class)
-	public ResponseEntity<NotFoundError> handleNotFoundException(NotFoundException exception) {
-		return new ResponseEntity<NotFoundError>(new NotFoundError(HttpStatus.NOT_FOUND, "example.com/probs/notfound",
-				"No item found", exception.getMessage()), HttpStatus.NOT_FOUND);
-	}
+		List<String> details = new ArrayList<String>();
+		StringBuilder builder = new StringBuilder();
+		builder.append(ex.getContentType());
+		builder.append(" media type is not supported. Supported media types are ");
+		ex.getSupportedMediaTypes().forEach(t -> builder.append(t).append(", "));
+		details.add(builder.toString());
 
-	@ExceptionHandler(BusinessException.class)
-	public ResponseEntity<BusinessError> handleBusinessException(BusinessException exception) {
-		return new ResponseEntity<BusinessError>(new BusinessError(HttpStatus.BAD_REQUEST, "example.com/probs/business",
-				"Business Exception", exception.getMessage()), HttpStatus.BAD_REQUEST);
-	}
+		Map<String, Object> errors = new HashMap<>();
+		errors.put("errorMessage", details);
+		errors.put("errorCode", status.value());
+		errors.put("httpStatus", status);
 
-	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<ValidationError> handleValidationException(MethodArgumentNotValidException exception) {
-		Map<String, String> validationExceptions = new HashMap<>();
-		exception.getBindingResult().getFieldErrors().forEach(item -> {
-			validationExceptions.put(((FieldError) item).getField(), item.getDefaultMessage());
-		});
-		return new ResponseEntity<ValidationError>(new ValidationError(HttpStatus.BAD_REQUEST,
-				"example.com/probs/validation", "Validation Exception(s)", "Validation Error.", validationExceptions),
-				HttpStatus.BAD_REQUEST);
+		return ResponseEntity.status(status).body(errors);
 
 	}
 
-	@ExceptionHandler(AccessDeniedException.class)
-	public ResponseEntity<AuthError> handleAuthException(AccessDeniedException exception) {
-		return new ResponseEntity<AuthError>(
-				new AuthError(HttpStatus.FORBIDDEN, "example.com/auth", "Authorization Error", exception.getMessage()),
-				HttpStatus.FORBIDDEN);
+	// handleHttpMessageNotReadable : triggers when the JSON is malformed
+	@Override
+	protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
+			HttpHeaders headers, HttpStatus status, WebRequest request) {
+		Map<String, Object> errors = new HashMap<>();
+		errors.put("errorMessage", ex.getMessage());
+		errors.put("errorCode", status.value());
+		errors.put("httpStatus", status);
+
+		return ResponseEntity.status(status).body(errors);
 	}
 
-	// TODO: fix authException handler
-	@ExceptionHandler(AuthException.class)
-	public ResponseEntity<AuthError> handleAuthException(AuthException exception) {
-		return new ResponseEntity<AuthError>(new AuthError(HttpStatus.UNAUTHORIZED, "example.com/auth",
-				"Authorization Error", exception.getMessage()), HttpStatus.UNAUTHORIZED);
+	// handleMissingServletRequestParameter : triggers when there are missing parameters
+	@Override
+	protected ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException ex,
+			HttpHeaders headers, HttpStatus status, WebRequest request) {
+
+		Map<String, Object> errors = new HashMap<>();
+		errors.put("errorMessage", ex.getParameterName() + " parameter is missing");
+		errors.put("errorCode", status.value());
+		errors.put("httpStatus", status);
+
+		return ResponseEntity.status(status).body(errors);
+	}
+
+	@Override
+	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+			HttpHeaders headers, HttpStatus status, WebRequest request) {
+		Map<String, String> errors = new HashMap<>();
+		ex.getBindingResult().getFieldErrors().forEach(err -> errors.put(err.getField(), err.getDefaultMessage()));
+		return ResponseEntity.badRequest().body(errors);
+	}
+	
+	@ExceptionHandler(GenericException.class)
+	public ResponseEntity<?> handleException(GenericException exception) {
+		Map<String, Object> errors = new HashMap<>();
+		errors.put("error", errors);
+		errors.put("errorCode", exception.getErrorCode());
+		return ResponseEntity
+                .status(exception.getHttpStatus() != null ?  exception.getHttpStatus() : HttpStatus.BAD_REQUEST)
+                .body(errors);
 	}
 
 }

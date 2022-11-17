@@ -5,9 +5,6 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
@@ -29,19 +26,25 @@ import lombok.NoArgsConstructor;
 @Builder
 public class Book extends BaseEntity{
 
+	@Column(name = "title", nullable = false)
 	private String title;
 	
+	@Column(name  ="author_name", nullable = false)
 	private String authorName;
 	
 	@Enumerated(value = EnumType.STRING)
 	private BookStatus bookStatus;
 	
+	@Column(name = "publisher", nullable = false)
 	private String publisher;
 	
+	@Column(name = "last_page_number", nullable = false)
 	private Integer lastPageNumber;
+	
+	@Column(name = "total_page", nullable = false)
 	private Integer totalPage;
 	
-	@OneToOne()
+	@OneToOne(fetch = FetchType.EAGER)
 	private Image image;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
@@ -49,6 +52,7 @@ public class Book extends BaseEntity{
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	private Category category;
 	
+	@Column(name = "user_id", nullable = false)
 	private Long userId;
 	
 }

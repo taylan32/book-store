@@ -3,8 +3,8 @@ package com.example.bookstore.service.book;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.bookstore.dto.SaveBookRequest;
 import com.example.bookstore.dto.SaveBookResponse;
+import com.example.bookstore.dto.request.SaveBookRequest;
 import com.example.bookstore.model.Book;
 import com.example.bookstore.model.Category;
 import com.example.bookstore.repository.BookRepository;

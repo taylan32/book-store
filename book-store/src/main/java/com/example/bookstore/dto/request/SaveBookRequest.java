@@ -1,4 +1,4 @@
-package com.example.bookstore.dto;
+package com.example.bookstore.dto.request;
 
 import java.io.File;
 
@@ -17,20 +17,22 @@ public final class SaveBookRequest {
 	@NotBlank(message = "Auhtor name is not allowed to be empty")
 	private String authorName;
 
-	//@NotBlank(message = "Book status is not allowed to be empty")
+	@NotNull
 	private BookStatus bookStatus;
 
 	@NotBlank(message = "Publisher is not allowed to be empty")
 	private String publisher;
 	
-	
+	@NotNull
 	private Integer lastPageNumber;
+	@NotNull
 	private Integer totalPage;
 	
 
 	//@NotBlank(message = "Title is not allowed to be empty")
 	private File image;
 	
+	@NotNull
 	private Long categoryId;
 	
 	

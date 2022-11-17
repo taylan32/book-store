@@ -20,7 +20,7 @@ public class BookSearchSpecification {
 				);
 	}
 	
-	public static Specification<Book> searSpecification(Long userId) {
+	public static Specification<Book> searchByUserSpecification(Long userId) {
 		return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("userId"), userId);
 	}
 	

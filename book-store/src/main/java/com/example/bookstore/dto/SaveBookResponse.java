@@ -1,6 +1,5 @@
 package com.example.bookstore.dto;
 
-import java.io.File;
 
 import com.example.bookstore.model.BookStatus;
 

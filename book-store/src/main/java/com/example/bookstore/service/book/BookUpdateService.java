@@ -2,12 +2,14 @@ package com.example.bookstore.service.book;
 
 import javax.transaction.Transactional;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 
 import com.example.bookstore.dto.BookResponse;
-import com.example.bookstore.dto.BookUpdateRequest;
-import com.example.bookstore.exception.NotFoundException;
+import com.example.bookstore.dto.ErrorCode;
+import com.example.bookstore.dto.request.BookUpdateRequest;
+import com.example.bookstore.exception.GenericException;
 import com.example.bookstore.model.Book;
 import com.example.bookstore.model.Category;
 import com.example.bookstore.repository.BookRepository;
@@ -25,7 +27,11 @@ public class BookUpdateService {
 	
 	@Transactional(rollbackOn = Exception.class)
 	public BookResponse update(BookUpdateRequest request) throws Exception {
-		Book book = this.bookRepository.findById(request.getId()).orElseThrow(() -> new NotFoundException("Book not found"));
+		Book book = this.bookRepository.findById(request.getId()).orElseThrow(() -> GenericException.builder()
+				.errorCode(ErrorCode.NOT_FOUND)
+				.errorMessage("Book not found")
+				.httpStatus(HttpStatus.NOT_FOUND)
+				.build());
 		
 		// TODO: handle file update
 		updateAttributes(request, book);

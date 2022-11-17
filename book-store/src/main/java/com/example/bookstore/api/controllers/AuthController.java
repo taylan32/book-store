@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.bookstore.dto.LoginRequest;
-import com.example.bookstore.dto.RegisterRequest;
 import com.example.bookstore.dto.TokenResponseDto;
 import com.example.bookstore.dto.UserDto;
+import com.example.bookstore.dto.request.LoginRequest;
+import com.example.bookstore.dto.request.RegisterRequest;
 import com.example.bookstore.service.auth.AuthService;
 
 

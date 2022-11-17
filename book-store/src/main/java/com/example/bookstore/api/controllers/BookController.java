@@ -18,10 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.bookstore.dto.BookListResponse;
 import com.example.bookstore.dto.BookResponse;
-import com.example.bookstore.dto.BookUpdateRequest;
 import com.example.bookstore.dto.CategoryType;
-import com.example.bookstore.dto.SaveBookRequest;
 import com.example.bookstore.dto.SaveBookResponse;
+import com.example.bookstore.dto.request.BookUpdateRequest;
+import com.example.bookstore.dto.request.SaveBookRequest;
 import com.example.bookstore.model.BookStatus;
 import com.example.bookstore.service.book.BookListService;
 import com.example.bookstore.service.book.BookUpdateService;
@@ -49,12 +49,14 @@ public class BookController {
 	
 	@GetMapping("/")
 	public ResponseEntity<List<BookListResponse>> list(@RequestParam(defaultValue = "1") int pageNumber, @RequestParam(defaultValue = "10") int pageSize) {
-		return ResponseEntity.ok(this.bookListService.list(pageNumber, pageSize));
+		final Long userId = this.userService.findUserInContext().getId();
+		return ResponseEntity.ok(this.bookListService.list(pageNumber, pageSize, userId));
 	}
 	
 	@GetMapping("/list/{categoryType}")
 	public ResponseEntity<List<BookListResponse>> searchByCategory(@PathVariable CategoryType categoryType) throws Exception {
-		return ResponseEntity.ok(this.bookListService.searchByCategory(categoryType));
+		Long userId = this.userService.findUserInContext().getId();
+		return ResponseEntity.ok(this.bookListService.searchByCategory(categoryType, userId));
 	}
 	
 	

@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class Category extends BaseEntity {
 
-	
+	@Column(name = "name", nullable = false)
 	private String name;
 	
 	@OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
