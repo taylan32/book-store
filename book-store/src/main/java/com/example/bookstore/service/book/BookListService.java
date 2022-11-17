@@ -39,8 +39,8 @@ public class BookListService {
 	}
 	
 	
-	public List<BookListResponse> searchByBookStatus(BookStatus bookStatus) {
-		return this.bookRepository.findByBookStatus(bookStatus).stream().map(
+	public List<BookListResponse> searchByBookStatus(BookStatus bookStatus, Long userId) {
+		return this.bookRepository.findAll(BookSearchSpecification.searchByBookStatus(bookStatus, userId)).stream().map(
 				item -> BookListResponse.builder()
 				.id(item.getId())
 				.imageUrl(item.getImage() != null ? item.getImage().getImageUrl() : null)
@@ -49,7 +49,7 @@ public class BookListService {
 	}
 
 	public List<BookListResponse> searchByTitle(String title) {
-		return this.bookRepository.findByTitle(title).stream().map(
+		return this.bookRepository.findAll(BookSearchSpecification.search(title)).stream().map(
 				item -> BookListResponse.builder()
 				.id(item.getId())
 				.imageUrl(item.getImage() != null ? item.getImage().getImageUrl() : null)

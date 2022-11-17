@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,12 +18,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.bookstore.dto.BookListResponse;
 import com.example.bookstore.dto.BookResponse;
+import com.example.bookstore.dto.BookUpdateRequest;
 import com.example.bookstore.dto.CategoryType;
 import com.example.bookstore.dto.SaveBookRequest;
 import com.example.bookstore.dto.SaveBookResponse;
 import com.example.bookstore.model.BookStatus;
 import com.example.bookstore.service.book.BookListService;
+import com.example.bookstore.service.book.BookUpdateService;
 import com.example.bookstore.service.book.CreateBookService;
+import com.example.bookstore.service.user.UserService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,6 +38,8 @@ public class BookController {
 	
 	private final BookListService bookListService;
 	private final CreateBookService createBookService;
+	private final UserService userService;
+	private final BookUpdateService bookUpdateService;
 	
 	
 	@PostMapping("/save")
@@ -53,8 +59,9 @@ public class BookController {
 	
 	
 	@GetMapping("/list/{bookStatus}")
-	public ResponseEntity<List<BookListResponse>> searchByBookStatus(@PathVariable BookStatus bookStatus) {
-		return ResponseEntity.ok(this.bookListService.searchByBookStatus(bookStatus));
+	public ResponseEntity<List<BookListResponse>> searchByBookStatus(@PathVariable BookStatus bookStatus) throws Exception {
+		Long userId = this.userService.findUserInContext().getId();
+		return ResponseEntity.ok(this.bookListService.searchByBookStatus(bookStatus, userId));
 	}
 
 	@GetMapping("/list/{title}")
@@ -66,6 +73,12 @@ public class BookController {
 	public ResponseEntity<BookResponse> findById(@PathVariable Long id) throws Exception {
 		return ResponseEntity.ok(this.bookListService.findById(id));
 	}
+	
+	@PutMapping("/update")
+	public ResponseEntity<BookResponse> update(@RequestBody BookUpdateRequest request) throws Exception {
+		return ResponseEntity.ok(this.bookUpdateService.update(request));
+	}
+	
 	
 	
 }
